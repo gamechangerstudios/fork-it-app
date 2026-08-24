@@ -62,6 +62,7 @@ body {
   padding: 32px 28px;
   box-shadow: 0 8px 32px rgba(0, 0, 0, 0.25);
   text-align: center;
+  overflow: hidden;
 }
 
 .glass-card.center {
@@ -179,15 +180,16 @@ button:active {
   position: relative;
   display: flex;
   align-items: center;
-  height: 46px;
+  height: 92px;
   background: rgba(255, 255, 255, 0.1);
   border: 1px solid rgba(255, 255, 255, 0.18);
-  border-radius: 12px;
-  margin-bottom: 10px;
-  padding: 0 10px;
+  border-radius: 16px;
+  margin-bottom: 14px;
+  padding: 0 14px;
   opacity: 0;
   transform: translateX(-16px);
   transition: opacity 0.4s ease, transform 0.4s ease;
+  overflow: visible;
 }
 
 .lane.lane-visible {
@@ -196,15 +198,15 @@ button:active {
 }
 
 .lane-name {
-  width: 78px;
-  min-width: 78px;
-  font-size: 0.82em;
+  width: 92px;
+  min-width: 92px;
+  font-size: 1.2em;
   font-weight: 600;
   text-align: left;
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
-  margin-right: 8px;
+  margin-right: 10px;
   opacity: 0.95;
 }
 
@@ -212,34 +214,38 @@ button:active {
   position: relative;
   flex: 1;
   height: 100%;
+  overflow: visible;
 }
 
 .runner {
   position: absolute;
-  left: 0%;
+  /* Starts far off-screen to the left */
+  left: -320px;
   top: 50%;
-  width: 34px;
-  height: 34px;
+  width: 68px;
+  height: 68px;
   border-radius: 50%;
   display: flex;
   align-items: center;
   justify-content: center;
-  font-size: 1.1em;
-  box-shadow: 0 0 14px 3px currentColor;
-  /* Entrance state: shrunk, faded, pulled back to the left */
+  font-size: 2.1em;
+  box-shadow: 0 0 20px 5px currentColor;
+  transform: translateY(-50%);
   opacity: 0;
-  transform: translateY(-50%) translateX(-30px) scale(0.3);
-  transition: opacity 0.45s ease, transform 0.45s cubic-bezier(0.34, 1.56, 0.64, 1);
+  transition: left 0.6s ease-out,
+              opacity 0.4s ease;
 }
 
-.runner.runner-visible {
+.runner.hopping-in {
   opacity: 1;
-  transform: translateY(-50%) translateX(0) scale(1);
+}
+
+.runner.at-start {
+  left: 0%;
 }
 
 .runner.racing {
-  /* once the race starts, movement is driven by "left", so we stop
-     transitioning transform and only transition left + glow */
+  /* once the race starts, movement uses "left" with a snappier feel */
   transition: left 0.18s ease, box-shadow 0.15s ease;
 }
 
@@ -249,7 +255,7 @@ button:active {
 }
 
 .runner.burst {
-  box-shadow: 0 0 22px 8px currentColor;
+  box-shadow: 0 0 28px 10px currentColor;
 }
 
 .finish-flag {
@@ -257,14 +263,50 @@ button:active {
   right: 0;
   top: 50%;
   transform: translateY(-50%);
-  font-size: 1.3em;
-  filter: drop-shadow(0 0 6px rgba(255,255,255,0.6));
+  font-size: 2.2em;
+  filter: drop-shadow(0 0 8px rgba(255,255,255,0.6));
   opacity: 0;
   transition: opacity 0.4s ease;
 }
 
 .finish-flag.flag-visible {
   opacity: 1;
+}
+
+/* COUNTDOWN */
+
+#countdown-overlay {
+  position: absolute;
+  inset: 0;
+  display: none;
+  align-items: center;
+  justify-content: center;
+  z-index: 10;
+  pointer-events: none;
+}
+
+#countdown-overlay.show {
+  display: flex;
+}
+
+#countdown-number {
+  font-size: 5em;
+  font-weight: 700;
+  color: #ffd93d;
+  text-shadow: 0 0 30px rgba(255, 217, 61, 0.9);
+  opacity: 0;
+  transform: scale(0.3);
+}
+
+#countdown-number.pop {
+  animation: countdownPop 0.7s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+@keyframes countdownPop {
+  0%   { opacity: 0; transform: scale(0.3); }
+  30%  { opacity: 1; transform: scale(1.15); }
+  55%  { transform: scale(1); }
+  100% { opacity: 0; transform: scale(1); }
 }
 
 /* WINNER SCREEN */

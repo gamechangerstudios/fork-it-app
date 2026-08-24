@@ -17,16 +17,20 @@ const readyBtn = document.getElementById('ready-btn');
 const track = document.getElementById('track');
 const winnerName = document.getElementById('winner-name');
 const restartBtn = document.getElementById('restart-btn');
+const countdownOverlay = document.getElementById('countdown-overlay');
+const countdownNumber = document.getElementById('countdown-number');
 
-// Glowing colors + matching emoji per lane
-const RUNNER_STYLES = [
-  { color: '#FF6B6B', emoji: '🏃' },
-  { color: '#4ECDC4', emoji: '🏃' },
-  { color: '#FFD93D', emoji: '🏃' },
-  { color: '#6BCB77', emoji: '🏃' },
-  { color: '#C77DFF', emoji: '🏃' },
-  { color: '#FF9F45', emoji: '🏃' },
-];
+const RUNNER_COLORS = ['#FF6B6B', '#4ECDC4', '#FFD93D', '#6BCB77', '#C77DFF', '#FF9F45'];
+const ANIMAL_EMOJIS = ['🐕', '🐇', '🐈', '🐓', '🦀', '🐢'];
+
+function shuffle(array) {
+  const arr = [...array];
+  for (let i = arr.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [arr[i], arr[j]] = [arr[j], arr[i]];
+  }
+  return arr;
+}
 
 startBtn.addEventListener('click', () => showScreen('input'));
 
@@ -51,17 +55,22 @@ readyBtn.addEventListener('click', () => {
     return;
   }
   showScreen('race');
-  startRace(options);
+  setupRace(options);
 });
 
-function startRace(options) {
+function setupRace(options) {
   track.innerHTML = '';
+  countdownOverlay.classList.remove('show');
   const runners = [];
   const lanes = [];
   const flags = [];
 
+  // Random animal for each lane, no repeats (there are 6 animals, max 6 options)
+  const shuffledAnimals = shuffle(ANIMAL_EMOJIS);
+
   options.forEach((name, i) => {
-    const style = RUNNER_STYLES[i % RUNNER_STYLES.length];
+    const color = RUNNER_COLORS[i % RUNNER_COLORS.length];
+    const emoji = shuffledAnimals[i % shuffledAnimals.length];
 
     const lane = document.createElement('div');
     lane.className = 'lane';
@@ -75,10 +84,9 @@ function startRace(options) {
 
     const runner = document.createElement('div');
     runner.className = 'runner';
-    runner.style.background = style.color;
-    runner.style.color = style.color; // powers the glow (box-shadow: currentColor)
-    runner.style.left = '0%';
-    runner.innerHTML = `<span>${style.emoji}</span>`;
+    runner.style.background = color;
+    runner.style.color = color; // powers the glow (box-shadow: currentColor)
+    runner.innerHTML = `<span>${emoji}</span>`;
 
     const flag = document.createElement('div');
     flag.className = 'finish-flag';
@@ -95,41 +103,65 @@ function startRace(options) {
     flags.push(flag);
   });
 
-  // ---- ENTRANCE ANIMATION ----
-  // Lanes slide in first (staggered), then runners pop/flow into place
-  // shortly after, then the race itself begins once everyone has arrived.
-  const laneStagger = 90;   // ms between each lane appearing
-  const runnerDelay = 250;  // runners start flowing in after lanes begin
-  const runnerStagger = 110;
-  const runnerAnimTime = 450;
-
+  // Lanes fade in together first, so the track is visible before racers arrive
   requestAnimationFrame(() => {
     requestAnimationFrame(() => {
       lanes.forEach((lane, i) => {
-        setTimeout(() => lane.classList.add('lane-visible'), i * laneStagger);
+        setTimeout(() => lane.classList.add('lane-visible'), i * 70);
       });
-
-      runners.forEach((r, i) => {
-        setTimeout(() => {
-          r.el.classList.add('runner-visible');
-        }, runnerDelay + i * runnerStagger);
-      });
-
       flags.forEach((flag, i) => {
-        setTimeout(() => {
-          flag.classList.add('flag-visible');
-        }, runnerDelay + i * runnerStagger);
+        setTimeout(() => flag.classList.add('flag-visible'), i * 70);
       });
     });
   });
 
-  // Total time before every runner has finished flowing in
-  const entranceTotal = runnerDelay + (runners.length - 1) * runnerStagger + runnerAnimTime;
+  const laneSettleTime = lanes.length * 70 + 350;
+
+  // Racers slide in from off-screen, one at a time, in a random order
+  const entryOrder = shuffle(runners.map((_, i) => i));
+  const entryStagger = 260;
 
   setTimeout(() => {
-    runners.forEach(r => r.el.classList.add('racing'));
-    runTheRace(runners);
-  }, entranceTotal + 150);
+    entryOrder.forEach((runnerIndex, orderPosition) => {
+      setTimeout(() => {
+        const r = runners[runnerIndex];
+        r.el.classList.add('hopping-in', 'at-start');
+      }, orderPosition * entryStagger);
+    });
+  }, laneSettleTime);
+
+  const allInPlaceTime = laneSettleTime + entryOrder.length * entryStagger + 650;
+
+  setTimeout(() => {
+    runCountdown(() => {
+      runners.forEach(r => r.el.classList.add('racing'));
+      runTheRace(runners);
+    });
+  }, allInPlaceTime);
+}
+
+function runCountdown(onDone) {
+  countdownOverlay.classList.add('show');
+  const steps = ['3', '2', '1', 'GO!'];
+  let i = 0;
+
+  function nextStep() {
+    countdownNumber.textContent = steps[i];
+    countdownNumber.classList.remove('pop');
+    void countdownNumber.offsetWidth; // restart animation
+    countdownNumber.classList.add('pop');
+    i++;
+    if (i < steps.length) {
+      setTimeout(nextStep, 700);
+    } else {
+      setTimeout(() => {
+        countdownOverlay.classList.remove('show');
+        onDone();
+      }, 500);
+    }
+  }
+
+  nextStep();
 }
 
 function runTheRace(runners) {
