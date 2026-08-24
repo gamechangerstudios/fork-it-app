@@ -4,39 +4,58 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Fork It</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@400;600;700&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="style.css">
 </head>
 <body>
 
-  <!-- WELCOME SCREEN -->
-  <div id="welcome-screen" class="screen">
-    <h1>🍴 Fork It</h1>
-    <p>Can't decide where to eat? Let's fix that.</p>
-    <button id="start-btn">Start</button>
-  </div>
+  <div id="app">
 
-  <!-- INPUT SCREEN -->
-  <div id="input-screen" class="screen hidden">
-    <h2>Type up to 6 options</h2>
-    <div id="options-container">
-      <input type="text" class="option-input" placeholder="Option 1">
-      <input type="text" class="option-input" placeholder="Option 2">
+    <!-- WELCOME SCREEN -->
+    <div id="welcome-screen" class="screen active">
+      <div class="glass-card center">
+        <div class="fork-icon">🍴</div>
+        <h1>Fork It</h1>
+        <p class="subtitle">Can't decide where to eat?<br>Let's settle it.</p>
+        <button id="start-btn" class="btn-primary">Let's Go</button>
+      </div>
     </div>
-    <button id="add-option-btn">+ Add another option</button>
-    <button id="ready-btn">Ready!</button>
-  </div>
 
-  <!-- RACE SCREEN -->
-  <div id="race-screen" class="screen hidden">
-    <h2>And they're off! 🏁</h2>
-    <div id="track"></div>
-  </div>
+    <!-- INPUT SCREEN -->
+    <div id="input-screen" class="screen">
+      <div class="glass-card">
+        <h2>What are the options?</h2>
+        <p class="hint">Add up to 6</p>
+        <div id="options-container">
+          <input type="text" class="option-input" placeholder="Option 1">
+          <input type="text" class="option-input" placeholder="Option 2">
+        </div>
+        <button id="add-option-btn" class="btn-secondary">+ Add another</button>
+        <button id="ready-btn" class="btn-primary">Ready!</button>
+      </div>
+    </div>
 
-  <!-- WINNER SCREEN -->
-  <div id="winner-screen" class="screen hidden">
-    <h2>🎉 Winner!</h2>
-    <p id="winner-name"></p>
-    <button id="restart-btn">Choose Again</button>
+    <!-- RACE SCREEN -->
+    <div id="race-screen" class="screen">
+      <div class="glass-card">
+        <h2 class="race-title">And they're off! 🏁</h2>
+        <div id="track"></div>
+      </div>
+    </div>
+
+    <!-- WINNER SCREEN -->
+    <div id="winner-screen" class="screen">
+      <canvas id="confetti-canvas"></canvas>
+      <div class="glass-card center winner-card">
+        <div class="trophy">🏆</div>
+        <h2>Winner!</h2>
+        <p id="winner-name"></p>
+        <button id="restart-btn" class="btn-primary">Choose Again</button>
+      </div>
+    </div>
+
   </div>
 
   <script src="script.js"></script>
