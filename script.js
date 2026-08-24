@@ -57,6 +57,8 @@ readyBtn.addEventListener('click', () => {
 function startRace(options) {
   track.innerHTML = '';
   const runners = [];
+  const lanes = [];
+  const flags = [];
 
   options.forEach((name, i) => {
     const style = RUNNER_STYLES[i % RUNNER_STYLES.length];
@@ -89,17 +91,48 @@ function startRace(options) {
     track.appendChild(lane);
 
     runners.push({ el: runner, progress: 0, name: name });
+    lanes.push(lane);
+    flags.push(flag);
   });
 
-  // Guarantee the starting position is painted before movement begins
+  // ---- ENTRANCE ANIMATION ----
+  // Lanes slide in first (staggered), then runners pop/flow into place
+  // shortly after, then the race itself begins once everyone has arrived.
+  const laneStagger = 90;   // ms between each lane appearing
+  const runnerDelay = 250;  // runners start flowing in after lanes begin
+  const runnerStagger = 110;
+  const runnerAnimTime = 450;
+
   requestAnimationFrame(() => {
     requestAnimationFrame(() => {
-      runners.forEach(r => {
-        r.el.style.transition = 'left 0.18s ease, box-shadow 0.15s ease';
+      lanes.forEach((lane, i) => {
+        setTimeout(() => lane.classList.add('lane-visible'), i * laneStagger);
+      });
+
+      runners.forEach((r, i) => {
+        setTimeout(() => {
+          r.el.classList.add('runner-visible');
+        }, runnerDelay + i * runnerStagger);
+      });
+
+      flags.forEach((flag, i) => {
+        setTimeout(() => {
+          flag.classList.add('flag-visible');
+        }, runnerDelay + i * runnerStagger);
       });
     });
   });
 
+  // Total time before every runner has finished flowing in
+  const entranceTotal = runnerDelay + (runners.length - 1) * runnerStagger + runnerAnimTime;
+
+  setTimeout(() => {
+    runners.forEach(r => r.el.classList.add('racing'));
+    runTheRace(runners);
+  }, entranceTotal + 150);
+}
+
+function runTheRace(runners) {
   const tickTime = 180;
   const finishLine = 90;
   const baseMin = 0.4;
@@ -137,7 +170,7 @@ function startRace(options) {
         winnerName.textContent = winner.name;
         showScreen('winner');
         launchConfetti();
-      }, 400);
+      }, 500);
     }
   }, tickTime);
 }
