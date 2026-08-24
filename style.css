@@ -53,19 +53,64 @@ button {
 
 .lane {
   position: relative;
-  height: 40px;
-  background: #ffe4cc;
+  display: flex;
+  align-items: center;
+  height: 44px;
+  background: repeating-linear-gradient(
+    90deg,
+    #ffe4cc,
+    #ffe4cc 20px,
+    #ffd9b8 20px,
+    #ffd9b8 40px
+  );
   border-radius: 8px;
-  margin-bottom: 8px;
+  margin-bottom: 10px;
+  padding: 0 10px;
+  box-sizing: border-box;
+}
+
+.lane-name {
+  width: 80px;
+  min-width: 80px;
+  font-size: 0.85em;
+  font-weight: bold;
+  text-align: left;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  margin-right: 8px;
+}
+
+.lane-track {
+  position: relative;
+  flex: 1;
+  height: 100%;
 }
 
 .runner {
   position: absolute;
   left: 0;
-  top: 5px;
-  font-size: 1.5em;
+  top: 50%;
+  transform: translateY(-50%) scaleX(-1);
+  font-size: 1.4em;
   transition: left 0.3s ease;
-  white-space: nowrap;
+}
+
+.runner.bounce {
+  animation: bounce 0.3s infinite alternate;
+}
+
+@keyframes bounce {
+  from { transform: translateY(-50%) scaleX(-1); }
+  to { transform: translateY(-65%) scaleX(-1); }
+}
+
+.finish-flag {
+  position: absolute;
+  right: 0;
+  top: 50%;
+  transform: translateY(-50%);
+  font-size: 1.3em;
 }
 
 #winner-name {

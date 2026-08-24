@@ -47,17 +47,34 @@ function startRace(options) {
   options.forEach((name) => {
     const lane = document.createElement('div');
     lane.className = 'lane';
+
+    const laneName = document.createElement('div');
+    laneName.className = 'lane-name';
+    laneName.textContent = name;
+
+    const laneTrack = document.createElement('div');
+    laneTrack.className = 'lane-track';
+
     const runner = document.createElement('div');
-    runner.className = 'runner';
-    runner.textContent = '🏃 ' + name;
-    lane.appendChild(runner);
+    runner.className = 'runner bounce';
+    runner.textContent = '🏃';
+
+    const flag = document.createElement('div');
+    flag.className = 'finish-flag';
+    flag.textContent = '🏁';
+
+    laneTrack.appendChild(runner);
+    laneTrack.appendChild(flag);
+    lane.appendChild(laneName);
+    lane.appendChild(laneTrack);
     track.appendChild(lane);
+
     runners.push({ el: runner, progress: 0, name: name });
   });
 
   const raceDuration = 10000; // 10 seconds
   const tickTime = 300;
-  const finishLine = 85; // percent
+  const finishLine = 88; // percent
 
   const interval = setInterval(() => {
     runners.forEach(r => {
@@ -74,6 +91,7 @@ function startRace(options) {
     finalWinner.el.style.left = finishLine + '%';
 
     setTimeout(() => {
+      runners.forEach(r => r.el.classList.remove('bounce'));
       raceScreen.classList.add('hidden');
       winnerScreen.classList.remove('hidden');
       winnerName.textContent = finalWinner.name;
