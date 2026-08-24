@@ -10,6 +10,16 @@ const winnerScreen = document.getElementById('winner-screen');
 const winnerName = document.getElementById('winner-name');
 const restartBtn = document.getElementById('restart-btn');
 
+// Fun colors + emojis so each runner is visually distinct
+const RUNNER_STYLES = [
+  { bg: '#FF6B6B', emoji: '🏃' },
+  { bg: '#4ECDC4', emoji: '🏃' },
+  { bg: '#FFD93D', emoji: '🏃' },
+  { bg: '#6BCB77', emoji: '🏃' },
+  { bg: '#A66DD4', emoji: '🏃' },
+  { bg: '#FF9F45', emoji: '🏃' },
+];
+
 startBtn.addEventListener('click', () => {
   welcomeScreen.classList.add('hidden');
   inputScreen.classList.remove('hidden');
@@ -44,7 +54,9 @@ function startRace(options) {
   track.innerHTML = '';
   const runners = [];
 
-  options.forEach((name) => {
+  options.forEach((name, i) => {
+    const style = RUNNER_STYLES[i % RUNNER_STYLES.length];
+
     const lane = document.createElement('div');
     lane.className = 'lane';
 
@@ -55,12 +67,13 @@ function startRace(options) {
     const laneTrack = document.createElement('div');
     laneTrack.className = 'lane-track';
 
+    // Runner element — style set BEFORE it's inserted, so there is
+    // nothing to transition away from on the very first paint.
     const runner = document.createElement('div');
-    runner.className = 'runner bounce';
-    runner.textContent = '🏃';
-    // Force starting position at the very left, with no transition yet
-    runner.style.transition = 'none';
+    runner.className = 'runner';
+    runner.style.background = style.bg;
     runner.style.left = '0%';
+    runner.innerHTML = `<span>${style.emoji}</span>`;
 
     const flag = document.createElement('div');
     flag.className = 'finish-flag';
@@ -75,19 +88,27 @@ function startRace(options) {
     runners.push({ el: runner, progress: 0, name: name });
   });
 
-  // Force the browser to register the starting position before enabling
-  // smooth movement, so runners don't appear to "slide in" from elsewhere.
-  track.offsetHeight; // forces reflow
-  runners.forEach(r => {
-    r.el.style.transition = 'left 0.25s ease';
+  // Wait two animation frames before turning on smooth movement.
+  // This guarantees the browser has painted the starting position
+  // (left: 0%) before any transition can play, so there's no
+  // "jump from the middle" glitch.
+  requestAnimationFrame(() => {
+    requestAnimationFrame(() => {
+      runners.forEach(r => {
+        r.el.style.transition = 'left 0.18s ease';
+      });
+    });
   });
 
-  const tickTime = 250;      // how often position updates
+  const tickTime = 180;      // fast updates = feels more alive
   const finishLine = 90;     // percent — where the flag sits
-  // Average increment tuned so a winner tends to arrive around 15 seconds.
-  // 15000ms / 250ms = 60 ticks; 90 / 60 = 1.5 average increment needed.
-  const minStep = 0.5;
-  const maxStep = 2.5;
+  // Tuned for ~10 second average races:
+  // 10000ms / 180ms ≈ 55 ticks; need ~1.6 avg progress per tick.
+  const baseMin = 0.4;
+  const baseMax = 1.8;
+  const burstChance = 0.18;   // 18% chance of a speed burst each tick
+  const burstMin = 3;
+  const burstMax = 6;
 
   let raceOver = false;
 
@@ -97,7 +118,10 @@ function startRace(options) {
     let winner = null;
 
     runners.forEach(r => {
-      const step = minStep + Math.random() * (maxStep - minStep);
+      let step = baseMin + Math.random() * (baseMax - baseMin);
+      if (Math.random() < burstChance) {
+        step += burstMin + Math.random() * (burstMax - burstMin);
+      }
       r.progress += step;
       if (r.progress >= finishLine) {
         r.progress = finishLine;
@@ -114,7 +138,6 @@ function startRace(options) {
       clearInterval(interval);
 
       setTimeout(() => {
-        runners.forEach(r => r.el.classList.remove('bounce'));
         raceScreen.classList.add('hidden');
         winnerScreen.classList.remove('hidden');
         winnerName.textContent = winner.name;
