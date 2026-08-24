@@ -58,6 +58,9 @@ function startRace(options) {
     const runner = document.createElement('div');
     runner.className = 'runner bounce';
     runner.textContent = '🏃';
+    // Force starting position at the very left, with no transition yet
+    runner.style.transition = 'none';
+    runner.style.left = '0%';
 
     const flag = document.createElement('div');
     flag.className = 'finish-flag';
@@ -72,31 +75,52 @@ function startRace(options) {
     runners.push({ el: runner, progress: 0, name: name });
   });
 
-  const raceDuration = 10000; // 10 seconds
-  const tickTime = 300;
-  const finishLine = 88; // percent
+  // Force the browser to register the starting position before enabling
+  // smooth movement, so runners don't appear to "slide in" from elsewhere.
+  track.offsetHeight; // forces reflow
+  runners.forEach(r => {
+    r.el.style.transition = 'left 0.25s ease';
+  });
+
+  const tickTime = 250;      // how often position updates
+  const finishLine = 90;     // percent — where the flag sits
+  // Average increment tuned so a winner tends to arrive around 15 seconds.
+  // 15000ms / 250ms = 60 ticks; 90 / 60 = 1.5 average increment needed.
+  const minStep = 0.5;
+  const maxStep = 2.5;
+
+  let raceOver = false;
 
   const interval = setInterval(() => {
+    if (raceOver) return;
+
+    let winner = null;
+
     runners.forEach(r => {
-      r.progress += Math.random() * 8;
-      if (r.progress > finishLine) r.progress = finishLine;
+      const step = minStep + Math.random() * (maxStep - minStep);
+      r.progress += step;
+      if (r.progress >= finishLine) {
+        r.progress = finishLine;
+      }
       r.el.style.left = r.progress + '%';
+
+      if (r.progress >= finishLine && !winner) {
+        winner = r;
+      }
     });
+
+    if (winner) {
+      raceOver = true;
+      clearInterval(interval);
+
+      setTimeout(() => {
+        runners.forEach(r => r.el.classList.remove('bounce'));
+        raceScreen.classList.add('hidden');
+        winnerScreen.classList.remove('hidden');
+        winnerName.textContent = winner.name;
+      }, 400);
+    }
   }, tickTime);
-
-  setTimeout(() => {
-    clearInterval(interval);
-    const trueWinnerIndex = Math.floor(Math.random() * runners.length);
-    const finalWinner = runners[trueWinnerIndex];
-    finalWinner.el.style.left = finishLine + '%';
-
-    setTimeout(() => {
-      runners.forEach(r => r.el.classList.remove('bounce'));
-      raceScreen.classList.add('hidden');
-      winnerScreen.classList.remove('hidden');
-      winnerName.textContent = finalWinner.name;
-    }, 500);
-  }, raceDuration);
 }
 
 restartBtn.addEventListener('click', () => {
