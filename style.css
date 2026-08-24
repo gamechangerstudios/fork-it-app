@@ -1,0 +1,75 @@
+body {
+  margin: 0;
+  font-family: Arial, sans-serif;
+  background: #fff5e6;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100vh;
+  text-align: center;
+}
+
+.screen {
+  padding: 20px;
+  width: 90%;
+  max-width: 400px;
+}
+
+.hidden {
+  display: none;
+}
+
+h1 {
+  font-size: 2.5em;
+}
+
+button {
+  background: #ff6b35;
+  color: white;
+  border: none;
+  padding: 14px 24px;
+  font-size: 1.1em;
+  border-radius: 10px;
+  margin-top: 15px;
+  cursor: pointer;
+}
+
+.option-input {
+  display: block;
+  width: 100%;
+  padding: 10px;
+  margin: 8px 0;
+  font-size: 1em;
+  border-radius: 8px;
+  border: 1px solid #ccc;
+  box-sizing: border-box;
+}
+
+#track {
+  width: 100%;
+  max-width: 350px;
+  margin: 20px auto;
+}
+
+.lane {
+  position: relative;
+  height: 40px;
+  background: #ffe4cc;
+  border-radius: 8px;
+  margin-bottom: 8px;
+}
+
+.runner {
+  position: absolute;
+  left: 0;
+  top: 5px;
+  font-size: 1.5em;
+  transition: left 0.3s ease;
+  white-space: nowrap;
+}
+
+#winner-name {
+  font-size: 1.8em;
+  font-weight: bold;
+  color: #ff6b35;
+}

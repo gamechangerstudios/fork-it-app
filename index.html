@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Fork It</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+  <!-- WELCOME SCREEN -->
+  <div id="welcome-screen" class="screen">
+    <h1>🍴 Fork It</h1>
+    <p>Can't decide where to eat? Let's fix that.</p>
+    <button id="start-btn">Start</button>
+  </div>
+
+  <!-- INPUT SCREEN -->
+  <div id="input-screen" class="screen hidden">
+    <h2>Type up to 6 options</h2>
+    <div id="options-container">
+      <input type="text" class="option-input" placeholder="Option 1">
+      <input type="text" class="option-input" placeholder="Option 2">
+    </div>
+    <button id="add-option-btn">+ Add another option</button>
+    <button id="ready-btn">Ready!</button>
+  </div>
+
+  <!-- RACE SCREEN -->
+  <div id="race-screen" class="screen hidden">
+    <h2>And they're off! 🏁</h2>
+    <div id="track"></div>
+  </div>
+
+  <!-- WINNER SCREEN -->
+  <div id="winner-screen" class="screen hidden">
+    <h2>🎉 Winner!</h2>
+    <p id="winner-name"></p>
+    <button id="restart-btn">Choose Again</button>
+  </div>
+
+  <script src="script.js"></script>
+</body>
+</html>
