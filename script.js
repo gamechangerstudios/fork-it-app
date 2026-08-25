@@ -65,7 +65,6 @@ function setupRace(options) {
   const lanes = [];
   const flags = [];
 
-  // Random animal for each lane, no repeats (there are 6 animals, max 6 options)
   const shuffledAnimals = shuffle(ANIMAL_EMOJIS);
 
   options.forEach((name, i) => {
@@ -75,15 +74,13 @@ function setupRace(options) {
     const lane = document.createElement('div');
     lane.className = 'lane';
 
-    // Track bar comes first (full width) so the runner can start
-    // truly flush against the left edge of it
     const laneTrack = document.createElement('div');
     laneTrack.className = 'lane-track';
 
     const runner = document.createElement('div');
     runner.className = 'runner';
     runner.style.background = color;
-    runner.style.color = color; // powers the glow (box-shadow: currentColor)
+    runner.style.color = color;
     runner.innerHTML = `<span>${emoji}</span>`;
 
     const flag = document.createElement('div');
@@ -93,7 +90,6 @@ function setupRace(options) {
     laneTrack.appendChild(runner);
     laneTrack.appendChild(flag);
 
-    // Name sits below the track bar as a caption
     const laneName = document.createElement('div');
     laneName.className = 'lane-name';
     laneName.textContent = name;
@@ -107,7 +103,6 @@ function setupRace(options) {
     flags.push(flag);
   });
 
-  // Lanes fade in together first, so the track is visible before racers arrive
   requestAnimationFrame(() => {
     requestAnimationFrame(() => {
       lanes.forEach((lane, i) => {
@@ -121,7 +116,6 @@ function setupRace(options) {
 
   const laneSettleTime = lanes.length * 70 + 350;
 
-  // Racers slide in from off-screen, one at a time, in a random order
   const entryOrder = shuffle(runners.map((_, i) => i));
   const entryStagger = 300;
 
@@ -134,8 +128,6 @@ function setupRace(options) {
     });
   }, laneSettleTime);
 
-  // Entry transition itself now takes 0.9s (was 0.6s), so we account
-  // for that extra time before starting the countdown
   const entryTransitionTime = 900;
   const allInPlaceTime = laneSettleTime + entryOrder.length * entryStagger + entryTransitionTime;
 
@@ -155,7 +147,7 @@ function runCountdown(onDone) {
   function nextStep() {
     countdownNumber.textContent = steps[i];
     countdownNumber.classList.remove('pop');
-    void countdownNumber.offsetWidth; // restart animation
+    void countdownNumber.offsetWidth;
     countdownNumber.classList.add('pop');
     i++;
     if (i < steps.length) {
@@ -222,7 +214,6 @@ restartBtn.addEventListener('click', () => {
   `;
 });
 
-// ----- Lightweight confetti (no external library needed) -----
 function launchConfetti() {
   const canvas = document.getElementById('confetti-canvas');
   const ctx = canvas.getContext('2d');
