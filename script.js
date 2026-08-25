@@ -75,10 +75,8 @@ function setupRace(options) {
     const lane = document.createElement('div');
     lane.className = 'lane';
 
-    const laneName = document.createElement('div');
-    laneName.className = 'lane-name';
-    laneName.textContent = name;
-
+    // Track bar comes first (full width) so the runner can start
+    // truly flush against the left edge of it
     const laneTrack = document.createElement('div');
     laneTrack.className = 'lane-track';
 
@@ -94,8 +92,14 @@ function setupRace(options) {
 
     laneTrack.appendChild(runner);
     laneTrack.appendChild(flag);
-    lane.appendChild(laneName);
+
+    // Name sits below the track bar as a caption
+    const laneName = document.createElement('div');
+    laneName.className = 'lane-name';
+    laneName.textContent = name;
+
     lane.appendChild(laneTrack);
+    lane.appendChild(laneName);
     track.appendChild(lane);
 
     runners.push({ el: runner, progress: 0, name: name });
@@ -119,7 +123,7 @@ function setupRace(options) {
 
   // Racers slide in from off-screen, one at a time, in a random order
   const entryOrder = shuffle(runners.map((_, i) => i));
-  const entryStagger = 260;
+  const entryStagger = 300;
 
   setTimeout(() => {
     entryOrder.forEach((runnerIndex, orderPosition) => {
@@ -130,7 +134,10 @@ function setupRace(options) {
     });
   }, laneSettleTime);
 
-  const allInPlaceTime = laneSettleTime + entryOrder.length * entryStagger + 650;
+  // Entry transition itself now takes 0.9s (was 0.6s), so we account
+  // for that extra time before starting the countdown
+  const entryTransitionTime = 900;
+  const allInPlaceTime = laneSettleTime + entryOrder.length * entryStagger + entryTransitionTime;
 
   setTimeout(() => {
     runCountdown(() => {

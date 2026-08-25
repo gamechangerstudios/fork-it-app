@@ -71,6 +71,14 @@ body {
   align-items: center;
 }
 
+/* Race card is 25% narrower than the other cards, but stays tall
+   so all lanes still have plenty of vertical room */
+.glass-card.race-card {
+  max-width: 300px;
+  max-height: 85vh;
+  overflow-y: auto;
+}
+
 .fork-icon {
   font-size: 3.2em;
   margin-bottom: 6px;
@@ -176,20 +184,18 @@ button:active {
   width: 100%;
 }
 
+/* Lane is now a column: the track bar on top, the restaurant name
+   as a caption underneath it. This means the track bar spans the
+   FULL width of the lane, so "left: 0%" for a runner is truly the
+   leftmost point of the whole visible bar — no more offset from a
+   name label eating into the left side. */
 .lane {
-  position: relative;
   display: flex;
-  align-items: center;
-  height: 92px;
-  background: rgba(255, 255, 255, 0.1);
-  border: 1px solid rgba(255, 255, 255, 0.18);
-  border-radius: 16px;
-  margin-bottom: 14px;
-  padding: 0 14px;
+  flex-direction: column;
+  margin-bottom: 20px;
   opacity: 0;
   transform: translateX(-16px);
   transition: opacity 0.4s ease, transform 0.4s ease;
-  overflow: visible;
 }
 
 .lane.lane-visible {
@@ -197,24 +203,25 @@ button:active {
   transform: translateX(0);
 }
 
+.lane-track {
+  position: relative;
+  width: 100%;
+  height: 70px;
+  background: rgba(255, 255, 255, 0.1);
+  border: 1px solid rgba(255, 255, 255, 0.18);
+  border-radius: 16px;
+  overflow: visible;
+}
+
 .lane-name {
-  width: 92px;
-  min-width: 92px;
-  font-size: 1.2em;
+  margin-top: 6px;
+  font-size: 1.15em;
   font-weight: 600;
-  text-align: left;
+  text-align: center;
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
-  margin-right: 10px;
   opacity: 0.95;
-}
-
-.lane-track {
-  position: relative;
-  flex: 1;
-  height: 100%;
-  overflow: visible;
 }
 
 .runner {
@@ -222,17 +229,18 @@ button:active {
   /* Starts far off-screen to the left */
   left: -320px;
   top: 50%;
-  width: 68px;
-  height: 68px;
+  width: 62px;
+  height: 62px;
   border-radius: 50%;
   display: flex;
   align-items: center;
   justify-content: center;
-  font-size: 2.1em;
+  font-size: 2em;
   box-shadow: 0 0 20px 5px currentColor;
   transform: translateY(-50%);
   opacity: 0;
-  transition: left 0.6s ease-out,
+  /* Entry slide is now 50% longer (was 0.6s) */
+  transition: left 0.9s ease-out,
               opacity 0.4s ease;
 }
 
@@ -260,10 +268,10 @@ button:active {
 
 .finish-flag {
   position: absolute;
-  right: 0;
+  right: 4px;
   top: 50%;
   transform: translateY(-50%);
-  font-size: 2.2em;
+  font-size: 2em;
   filter: drop-shadow(0 0 8px rgba(255,255,255,0.6));
   opacity: 0;
   transition: opacity 0.4s ease;
