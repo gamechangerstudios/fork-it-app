@@ -31,7 +31,6 @@ body {
   position: relative;
 }
 
-/* Screen transitions: longer and bouncier for a playful feel */
 .screen {
   position: absolute;
   inset: 0;
@@ -72,8 +71,6 @@ body {
   align-items: center;
 }
 
-/* Race card: same width as the other cards so tracks can stretch
-   across nearly the full screen */
 .glass-card.race-card {
   max-height: 85vh;
   overflow-y: auto;
@@ -174,8 +171,6 @@ button:active {
   background: rgba(255, 255, 255, 0.2);
 }
 
-/* SPECTATORS */
-
 .spectators {
   display: flex;
   justify-content: center;
@@ -199,8 +194,6 @@ button:active {
   50%      { transform: translateY(-7px); }
 }
 
-/* RACE TRACK */
-
 .race-title {
   margin-bottom: 16px;
 }
@@ -217,7 +210,7 @@ button:active {
   display: flex;
   flex-direction: column;
   align-items: center;
-  margin-bottom: 16px;
+  margin-bottom: 18px;
   opacity: 0;
   transform: translateX(-16px);
   transition: opacity 0.4s ease, transform 0.4s ease;
@@ -228,12 +221,11 @@ button:active {
   transform: translateX(0);
 }
 
-/* Track stretches across the full width of the card (as long as
-   possible), but stays thin — not a fat bar */
+/* Track is 50% thicker than before, still stretches full card width */
 .lane-track {
   position: relative;
   width: 100%;
-  height: clamp(18px, 5vw, 26px);
+  height: clamp(27px, 7.5vw, 39px);
   background: rgba(255, 255, 255, 0.1);
   border: 1px solid rgba(255, 255, 255, 0.18);
   border-radius: 999px;
@@ -241,7 +233,7 @@ button:active {
 }
 
 .lane-name {
-  margin-top: 5px;
+  margin-top: 6px;
   font-size: 0.9em;
   font-weight: 600;
   text-align: center;
@@ -254,20 +246,18 @@ button:active {
 
 .runner {
   position: absolute;
-  /* Starts well off-screen to the left, clipped by the card's overflow:hidden */
   left: -600px;
   top: 50%;
-  width: clamp(26px, 8vw, 34px);
-  height: clamp(26px, 8vw, 34px);
+  width: clamp(39px, 12vw, 51px);
+  height: clamp(39px, 12vw, 51px);
   border-radius: 50%;
   display: flex;
   align-items: center;
   justify-content: center;
-  font-size: clamp(15px, 4.5vw, 20px);
-  box-shadow: 0 0 14px 4px currentColor;
+  font-size: clamp(23px, 6.75vw, 30px);
+  box-shadow: 0 0 16px 5px currentColor;
   transform: translateY(-50%);
   opacity: 0;
-  /* Entry slide takes 0.9s */
   transition: left 0.9s ease-out,
               opacity 0.4s ease;
 }
@@ -290,15 +280,15 @@ button:active {
 }
 
 .runner.burst {
-  box-shadow: 0 0 22px 8px currentColor;
+  box-shadow: 0 0 26px 9px currentColor;
 }
 
 .finish-flag {
   position: absolute;
-  right: 2px;
+  right: 3px;
   top: 50%;
   transform: translateY(-50%);
-  font-size: clamp(16px, 4.5vw, 20px);
+  font-size: clamp(24px, 6.75vw, 30px);
   filter: drop-shadow(0 0 6px rgba(255,255,255,0.6));
   opacity: 0;
   transition: opacity 0.4s ease;
@@ -307,8 +297,6 @@ button:active {
 .finish-flag.flag-visible {
   opacity: 1;
 }
-
-/* COUNTDOWN */
 
 #countdown-overlay {
   position: absolute;
@@ -343,8 +331,6 @@ button:active {
   55%  { transform: scale(1); }
   100% { opacity: 0; transform: scale(1); }
 }
-
-/* WINNER SCREEN */
 
 #confetti-canvas {
   position: absolute;
