@@ -37,7 +37,7 @@
       </div>
     </div>
 
-    <!-- RACE SCREEN -->
+    <!-- RACE SCREEN (3+ options) -->
     <div id="race-screen" class="screen">
       <div class="glass-card race-card">
         <div class="spectators">
@@ -46,9 +46,27 @@
         <h2 class="race-title">And they're off! 🏁</h2>
         <div id="track"></div>
       </div>
-      <div id="countdown-overlay">
-        <div id="countdown-number">3</div>
+    </div>
+
+    <!-- COIN FLIP SCREEN (exactly 2 options) -->
+    <div id="coinflip-screen" class="screen">
+      <div class="glass-card center">
+        <div class="spectators">
+          <span>🙌</span><span>🎉</span><span>👏</span><span>😄</span><span>🙌</span>
+        </div>
+        <h2>Heads or tails? 🪙</h2>
+        <div class="coin-scene">
+          <div id="coin" class="coin">
+            <div class="coin-face coin-front"><span id="coin-front-text"></span></div>
+            <div class="coin-face coin-back"><span id="coin-back-text"></span></div>
+          </div>
+        </div>
       </div>
+    </div>
+
+    <!-- Shared countdown, used by both race and coin flip -->
+    <div id="countdown-overlay">
+      <div id="countdown-number">3</div>
     </div>
 
     <!-- WINNER SCREEN -->

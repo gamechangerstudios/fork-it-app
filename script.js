@@ -2,6 +2,7 @@ const screens = {
   welcome: document.getElementById('welcome-screen'),
   input: document.getElementById('input-screen'),
   race: document.getElementById('race-screen'),
+  coinflip: document.getElementById('coinflip-screen'),
   winner: document.getElementById('winner-screen'),
 };
 
@@ -19,6 +20,10 @@ const winnerName = document.getElementById('winner-name');
 const restartBtn = document.getElementById('restart-btn');
 const countdownOverlay = document.getElementById('countdown-overlay');
 const countdownNumber = document.getElementById('countdown-number');
+
+const coinEl = document.getElementById('coin');
+const coinFrontText = document.getElementById('coin-front-text');
+const coinBackText = document.getElementById('coin-back-text');
 
 const RUNNER_COLORS = ['#FF6B6B', '#4ECDC4', '#FFD93D', '#6BCB77', '#C77DFF', '#FF9F45'];
 const ANIMAL_EMOJIS = ['🐕', '🐇', '🐈', '🐓', '🦀', '🐢'];
@@ -54,13 +59,80 @@ readyBtn.addEventListener('click', () => {
     alert('Type at least 2 options!');
     return;
   }
-  showScreen('race');
-  setupRace(options);
+
+  if (options.length === 2) {
+    // Exactly 2 options: a quick coin flip feels better than a full race
+    showScreen('coinflip');
+    setupCoinFlip(options);
+  } else {
+    showScreen('race');
+    setupRace(options);
+  }
 });
+
+// ---------------- SHARED COUNTDOWN ----------------
+
+function runCountdown(onDone) {
+  countdownOverlay.classList.add('show');
+  const steps = ['3', '2', '1', 'GO!'];
+  let i = 0;
+
+  function nextStep() {
+    countdownNumber.textContent = steps[i];
+    countdownNumber.classList.remove('pop');
+    void countdownNumber.offsetWidth; // restart animation
+    countdownNumber.classList.add('pop');
+    i++;
+    if (i < steps.length) {
+      setTimeout(nextStep, 700);
+    } else {
+      setTimeout(() => {
+        countdownOverlay.classList.remove('show');
+        onDone();
+      }, 500);
+    }
+  }
+
+  nextStep();
+}
+
+// ---------------- COIN FLIP (2 options) ----------------
+
+function setupCoinFlip(options) {
+  const [optionA, optionB] = options;
+  coinFrontText.textContent = optionA;
+  coinBackText.textContent = optionB;
+
+  // Reset the coin instantly to a flat, unrotated state before the
+  // screen's entrance animation plays
+  coinEl.style.transition = 'none';
+  coinEl.style.transform = 'rotateY(0deg)';
+  void coinEl.offsetWidth; // force reflow so the reset actually applies
+
+  // Give the card a moment to finish sliding in before the countdown starts
+  setTimeout(() => {
+    runCountdown(() => {
+      const winnerIsFront = Math.random() < 0.5;
+      const fullSpins = 5; // purely for visual drama
+      const totalDegrees = fullSpins * 360 + (winnerIsFront ? 0 : 180);
+
+      coinEl.style.transition = 'transform 3s cubic-bezier(0.15, 0.85, 0.35, 1)';
+      coinEl.style.transform = `rotateY(${totalDegrees}deg)`;
+
+      setTimeout(() => {
+        const winner = winnerIsFront ? optionA : optionB;
+        winnerName.textContent = winner;
+        showScreen('winner');
+        launchConfetti();
+      }, 3200);
+    });
+  }, 500);
+}
+
+// ---------------- RACE (3-6 options) ----------------
 
 function setupRace(options) {
   track.innerHTML = '';
-  countdownOverlay.classList.remove('show');
   const runners = [];
   const lanes = [];
   const flags = [];
@@ -139,30 +211,6 @@ function setupRace(options) {
   }, allInPlaceTime);
 }
 
-function runCountdown(onDone) {
-  countdownOverlay.classList.add('show');
-  const steps = ['3', '2', '1', 'GO!'];
-  let i = 0;
-
-  function nextStep() {
-    countdownNumber.textContent = steps[i];
-    countdownNumber.classList.remove('pop');
-    void countdownNumber.offsetWidth;
-    countdownNumber.classList.add('pop');
-    i++;
-    if (i < steps.length) {
-      setTimeout(nextStep, 700);
-    } else {
-      setTimeout(() => {
-        countdownOverlay.classList.remove('show');
-        onDone();
-      }, 500);
-    }
-  }
-
-  nextStep();
-}
-
 function runTheRace(runners) {
   const tickTime = 180;
   const finishLine = 90;
@@ -206,6 +254,8 @@ function runTheRace(runners) {
   }, tickTime);
 }
 
+// ---------------- RESTART ----------------
+
 restartBtn.addEventListener('click', () => {
   showScreen('welcome');
   optionsContainer.innerHTML = `
@@ -213,6 +263,8 @@ restartBtn.addEventListener('click', () => {
     <input type="text" class="option-input" placeholder="Option 2">
   `;
 });
+
+// ---------------- CONFETTI ----------------
 
 function launchConfetti() {
   const canvas = document.getElementById('confetti-canvas');
